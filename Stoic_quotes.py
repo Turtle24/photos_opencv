@@ -22,9 +22,11 @@ for idx, job_elem in enumerate(job_elems):
     # Save quotes
     quotes[idx] = quote_elem.text.strip().split("\n")
 
-    # textfile = open('quotes.txt', 'w')
-    # textfile.write(quote_elem.text.strip())
-    # textfile.close()
-
-for i in quotes.keys():
-    print(i)
+for key, value in quotes.items():
+    quotes = value[0].replace("\xa0", "")
+    # write to txt file
+    textfile = open('quotes.txt', 'a')
+    with open('quotes.txt', 'a') as file:
+        file.write(quotes + '\n')
+    # textfile.write(quotes + '\n')
+    textfile.close()  

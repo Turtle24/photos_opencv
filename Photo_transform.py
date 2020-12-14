@@ -1,6 +1,7 @@
 #pylint:disable=no-member
 import cv2 as cv
 import numpy as np
+import random
 
 img = cv.imread('Photos/PHOTO-2020-12-12-09-49-05.jpg')
 # cv.imshow('Kyle', img)
@@ -22,8 +23,20 @@ lap = np.uint8(np.absolute(lap))
 
 #cv.putText(lap, "If you are distressed by anything external, the pain is not due to the thing itself, but to your estimate of it; and this you have the power to revoke at any moment.― Marcus Aurelius", (0,500), cv.FONT_HERSHEY_TRIPLEX, .5, (255,255,255), 1)
 # Insert quote onto image
+
+# Access quotes from txt
+quotes = open("quotes.txt", "r")
+lines = quotes.readlines()
+
+# randomly choose quote and assign it to text variable
+for no,line in enumerate(lines,1):
+    #print(no, line)
+    rand_pos = random.randint(1,35)
+    if rand_pos == no:
+        text = line
+
 position = (0, 500)
-text = "If you are distressed by anything external, the pain is not due to the thing itself, \nbut to your estimate of it; and this you have the power to revoke at any moment. \nMarcus Aurelius"
+#text = "If you are distressed by anything external, the pain is not due to the thing itself, \nbut to your estimate of it; and this you have the power to revoke at any moment. \nMarcus Aurelius"
 font_scale = .5
 colour = (255, 255, 255)
 thickness = 1
