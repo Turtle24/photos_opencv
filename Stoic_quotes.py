@@ -23,7 +23,15 @@ for idx, job_elem in enumerate(job_elems):
     quotes[idx] = quote_elem.text.strip().split("\n")
 
 for key, value in quotes.items():
-    quotes = value[0].replace("\xa0", "")
+    # Formatting 
+    quotes = value[0].replace("“", '"')
+    quotes = quotes.replace("”", '"')
+    quotes = quotes.replace("–", "-")
+    quotes = quotes.replace("\xa0", "")
+    quotes = quotes.replace("’", "'")
+    quotes = quotes.replace("—", "--")
+    quotes = quotes.replace("…", "...")
+    quotes = quotes.replace("‘", "...")
     # write to txt file
     textfile = open('quotes.txt', 'a')
     with open('quotes.txt', 'a') as file:

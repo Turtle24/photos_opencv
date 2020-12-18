@@ -2,45 +2,73 @@
 import cv2 as cv
 import numpy as np
 import random
+import os
 
-img = cv.imread('Photos/PHOTO-2020-12-12-09-49-05.jpg')
+# Select random picture
+directory = "Photos"
+
+for filename in os.listdir(directory):
+    num_files = len([f for f in os.listdir(directory)if os.path.isfile(os.path.join(directory, f))])
+    rand_pos = random.randint(1,num_files)
+    if num_files == rand_pos:
+        photo = cv.imread(directory + "/" + filename)
+        #cv.imshow('Kyle', img)
+
+#img = cv.imread(random_filename)
 # cv.imshow('Kyle', img)
 
-gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+#gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 # cv.imshow('Kyle', gray)
 
 # Gaussian Blur first
-gauss = cv.GaussianBlur(gray, (3,3), 0)
-cv.imshow('Gaussian Blur', gauss)
+# gauss = cv.GaussianBlur(gray, (3,3), 0)
+# #cv.imshow('Gaussian Blur', gauss)
 
-# Laplacian
-lap = cv.Laplacian(gauss, cv.CV_64F)
-lap = np.uint8(np.absolute(lap))
+# # Laplacian
+# lap = cv.Laplacian(gauss, cv.CV_64F)
+# lap = np.uint8(np.absolute(lap))
 # cv.imshow('Laplacian', lap)
 
 # canny = cv.Canny(gauss, 150, 175)
 # cv.imshow('Canny', canny)
 
-#cv.putText(lap, "If you are distressed by anything external, the pain is not due to the thing itself, but to your estimate of it; and this you have the power to revoke at any moment.― Marcus Aurelius", (0,500), cv.FONT_HERSHEY_TRIPLEX, .5, (255,255,255), 1)
-# Insert quote onto image
+# Select random image effect \:D/
+def effectRandomizer(photo):
+    rand_pos = random.randint(1,10)
+    if rand_pos % 2 == 0:
+        return cv.cvtColor(photo, cv.COLOR_BGR2GRAY)
+    elif rand_pos % 3 == 0:
+        gray = cv.cvtColor(photo, cv.COLOR_BGR2GRAY)
+        gauss = cv.GaussianBlur(gray, (3,3), 0)
+        lap = cv.Laplacian(gauss, cv.CV_64F)
+        return np.uint8(np.absolute(lap))
 
 # Access quotes from txt
+import random
 quotes = open("quotes.txt", "r")
 lines = quotes.readlines()
-
+print(lines)
+text = ""
 # randomly choose quote and assign it to text variable
 for no,line in enumerate(lines,1):
-    #print(no, line)
-    rand_pos = random.randint(1,35)
+    # insert \n for line split in putText
+    if len(line) > 50:
+        text = line[:50] + "\n" + line[50:]
+    # Random quote
+    rand_pos = random.randint(1,len(lines))
     if rand_pos == no:
-        text = line
+        text = text
+#print(text)
 
-position = (0, 500)
+# Call random effect and image
+img = effectRandomizer(photo)
+
+position = (img.shape[1] // 2 - img.shape[1] // 3, img.shape[0] // 2 + img.shape[0] // 5)
 #text = "If you are distressed by anything external, the pain is not due to the thing itself, \nbut to your estimate of it; and this you have the power to revoke at any moment. \nMarcus Aurelius"
-font_scale = .5
+font_scale = .6
 colour = (255, 255, 255)
 thickness = 1
-font = cv.FONT_HERSHEY_TRIPLEX
+font = cv.FONT_HERSHEY_DUPLEX  
 line_type = cv.LINE_AA
 
 text_size, _ = cv.getTextSize(text, font, font_scale, thickness)
@@ -48,7 +76,7 @@ line_height = text_size[1] + 5
 x, y0 = position
 for i, line in enumerate(text.split("\n")):
     y = y0 + i * line_height
-    cv.putText(lap,
+    cv.putText(img,
                 line,
                 (x, y),
                 font,
@@ -57,6 +85,6 @@ for i, line in enumerate(text.split("\n")):
                 thickness,
                 line_type)
 
-cv.imshow('Text', lap)
+cv.imshow('Text', img)
 
 cv.waitKey(0)
