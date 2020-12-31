@@ -48,9 +48,7 @@ def randomQuote(quotelist,ran_num):
         tw.width = 50
         # Random quote
         
-        if rand_pos == no:
-            # if len(line) > 50:
-            #     random_quote = line[:50] + "\n" + line[50:100] + "\n" + line[100:]
+        if rand_pos == no:            
             if len(line) > 50:
                 random_quote = "\n".join(tw.wrap(line))
             else:
@@ -126,8 +124,7 @@ def placeText(text, img):
                         colour,
                         thickness,
                         line_type)
-    # Save image
-    #cv.imshow('Text', img)
+                        
     cv.waitKey(0)
     cv.imwrite("image.jpg", img)
 # Call place text

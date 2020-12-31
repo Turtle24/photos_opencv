@@ -10,7 +10,7 @@ subject = "Here's Your Picture For The Week!"
 body = "Love you lots mom! <3"
 sender_email = "picaccnt24@gmail.com"
 receiver_email = "lerima.wallace@gmail.com"
-password = 'kyle0411' #input("Type your password and press enter:")
+password = 'kyle0411' # input("Type your password and press enter:")
 
 # Create a multipart message and set headers
 message = MIMEMultipart()

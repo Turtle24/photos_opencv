@@ -7,7 +7,7 @@ page = requests.get(url)
 
 soup = BeautifulSoup(page.content, 'html.parser')
 
-# Get results from website post-347
+# Get results from website
 def getResults(ids):
     return soup.find(id = ids)
     
