@@ -6,11 +6,11 @@ from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-subject = "Here's Your Picture For The Week!"
-body = "Love you lots mom! <3"
-sender_email = "picaccnt24@gmail.com"
-receiver_email = "lerima.wallace@gmail.com"
-password = 'kyle0411' # input("Type your password and press enter:")
+subject = "subject of email"
+body = "body of email"
+sender_email = "sender account"
+receiver_email = "reciever account"
+password = 'password' # OR use this input # input("Type your password and press enter:")
 
 # Create a multi-part message and set headers
 message = MIMEMultipart()
