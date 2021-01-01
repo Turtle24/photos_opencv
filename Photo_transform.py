@@ -16,7 +16,7 @@ lines = quotes.readlines()
 num_files = len([f for f in os.listdir(directory)if os.path.isfile(os.path.join(directory, f))])
 rand_pos = random.randint(1,num_files)
 
-# Select Random photo
+# Select a Random photo
 def randomPhoto(photo_directory,rand_num):    
     for idx ,filename in enumerate(os.listdir(directory)):
         print(rand_pos)

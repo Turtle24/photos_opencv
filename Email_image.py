@@ -12,7 +12,7 @@ sender_email = "picaccnt24@gmail.com"
 receiver_email = "lerima.wallace@gmail.com"
 password = 'kyle0411' # input("Type your password and press enter:")
 
-# Create a multipart message and set headers
+# Create a multi-part message and set headers
 message = MIMEMultipart()
 message["From"] = sender_email
 message["To"] = receiver_email
