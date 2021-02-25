@@ -10,15 +10,14 @@ class PictureTransformer:
     def __init__(self, quotes_file, directory):
         self.quotes_file = quotes_file
         self.directory = directory
-        self.quotes = open(f"data/{self.quotes_file}.txt", "r").readlines()
-        self.num_files = len([f for f in os.listdir(directory)if os.path.isfile(os.path.join(directory, f))])
+        self.num_files = len([f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))])
         self.rand_pos = random.randint(1, self.num_files)
         self.rand_effect = random.randint(1,3)
         self.photo = None
         self.random_quote = ""
 
     def __str__(self):
-        return f"Pictures from {self.directory} directory and there are {self.num_files} photos. Stoic quotes from {self.quotes_file}.txt. Picture state {self.photo}"
+        return f"Picture state {self.photo} \nQuote: {self.random_quote}"
 
     def __repr__(self):
         return self.photo
@@ -49,12 +48,14 @@ class PictureTransformer:
     # Select random image effect 
     def effect_randomizer(self):
         if self.rand_effect == 1:
-            return cv.cvtColor(self.photo, cv.COLOR_BGR2GRAY)
+            self.photo = cv.cvtColor(self.photo, cv.COLOR_BGR2GRAY)
+            return self.photo
         elif self.rand_effect == 2:
             gray = cv.cvtColor(self.photo, cv.COLOR_BGR2GRAY)
             gauss = cv.GaussianBlur(gray, (3,3), 0)
             lap = cv.Laplacian(gauss, cv.CV_16S,ksize=3)
-            return np.uint8(np.absolute(lap))
+            self.photo = np.uint8(np.absolute(lap))
+            return self.photo
         elif self.rand_effect == 3:
             return self.photo
 
@@ -62,7 +63,8 @@ class PictureTransformer:
     # rand_pos_text = random.randint(1,len(lines) - 1)
     # # randomly choose quote and assign it to text variable
     def random_quote_selector(self):
-        for no, line in enumerate(self.quotes,1):
+        quotes = open(f"data/{self.quotes_file}.txt", "r").readlines()
+        for no, line in enumerate(quotes,1):
             # insert \n for line split in putText
             tw = TextWrapper()
             tw.width = 50
@@ -151,22 +153,22 @@ class PictureTransformer:
 # placeText(text, img)
 
 class TextSettings(PictureTransformer):
-    def __init__(self, quotes_file, directory, quotes, num_files, rand_pos, rand_effect, photo, random_quote):
-        super().__init__(self, quotes_file, directory, quotes, num_files, rand_pos, rand_effect, photo, random_quote)
+    def __init__(self, random_quote, photo):
+        super().__init__(random_quote, photo)
         self.position = 0
         self.font_scale = 0
         self.colour = (None, None, None)
         self.thickness = 0
         self.font = None 
         self.line_type = None
-        self.text_size, _ = None
+        self.text_size, _ = 0, 0
         self.line_height = None
         self.x, self.y0 = (None, None)
 
     def __str__(self):
-        return f"Settings: {self.font} etc"
+        return f"Photo {self.photo} \n{self.random_quote}"
 
-    def text_settings(self):
+    def text_settings_default(self):
         # Text on image variables
         self.position = (self.photo.shape[1] // 20, self.photo.shape[0] // 2 + self.photo.shape[0] // 5)
         self.font_scale = .6
@@ -174,9 +176,9 @@ class TextSettings(PictureTransformer):
         self.thickness = 1
         self.font = cv.FONT_HERSHEY_DUPLEX  
         self.line_type = cv.LINE_AA
-        self.text_size, _ = cv.getTextSize(self.random_quote, font, font_scale, thickness)
-        self.line_height = text_size[1] + 5
-        self.x, self.y0 = position
+        self.text_size, _ = cv.getTextSize(self.random_quote, self.font, self.font_scale, self.thickness)
+        self.line_height = self.text_size[1] + 5
+        self.x, self.y0 = self.position
     
     def place_text(self):
         if len(self.random_quote) > 50:
@@ -185,18 +187,18 @@ class TextSettings(PictureTransformer):
                 y = self.y0 + i * self.line_height
                 cv.putText(self.photo,
                             line,
-                            (x, y),
+                            (self.x, y),
                             self.font,
                             self.font_scale,
                             (0, 0, 0),
                             self.thickness + 1,
                             self.line_type)
             # Normal white text
-            for i, line in enumerate(random_quote.split("\n")):
+            for i, line in enumerate(self.random_quote.split("\n")):
                 y = self.y0 + i * self.line_height
                 cv.putText(self.photo,
                             line,
-                            (x, y),
+                            (self.x, y),
                             self.font,
                             self.font_scale,
                             self.colour,
@@ -206,22 +208,22 @@ class TextSettings(PictureTransformer):
         else:
 
             #Black Outline
-            for i, line in enumerate(random_quote.split("\n")):
+            for i, line in enumerate(self.random_quote.split("\n")):
                 y = self.y0 + i * self.line_height
                 cv.putText(self.photo,
                             self.line,
-                            (x, y),
+                            (self.x, y),
                             self.font,
                             self.font_scale,
                             (0, 0, 0),
                             self.thickness + 1,
                             self.line_type)
             # Normal white text
-            for i, line in enumerate(random_quote):
+            for i, line in enumerate(self.random_quote):
                 y = self.y0 + i * self.line_height
                 cv.putText(self.photo,
                             self.line,
-                            (x, y),
+                            (self.x, y),
                             self.font,
                             self.font_scale,
                             self.colour,
