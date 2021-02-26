@@ -24,6 +24,7 @@ class PictureTransformer:
         self.rand_effect = random.randint(1,3)
         self.photo = None
         self.random_quote = ""
+        self.number = len([f for f in os.listdir("created_images") if os.path.isfile(os.path.join("created_images", f))]) 
 
     def __str__(self):
         return f"Picture state {self.photo} \nQuote: {self.random_quote}"
@@ -138,7 +139,6 @@ class TextSettings(PictureTransformer):
                             self.font_scale,
                             self.colour,
                             self.thickness,
-                            self.line_type)
-                            
+                            self.line_type)           
         cv.waitKey(0)
-        cv.imwrite("image.jpg", self.photo)
+        cv.imwrite(f"created_images/image{self.number + 1}.jpg", self.photo)

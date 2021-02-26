@@ -6,6 +6,24 @@ from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
+
+class SendEmail:
+    def __init__(self, ):
+        self.subject = "subject of email"
+        self.body = "body of email"
+        self.sender_email = "sender account"
+        self.receiver_email = "reciever account"
+        self.password = 'password'
+
+class EmailSettings(MIMEMultipart):
+    def __init__(self):
+        super().__init__()
+        self.message = EmailSettings()
+        self.message["From"] = sender_email
+        self.message["To"] = receiver_email
+        self.message["Subject"] = subject
+        self.message["Bcc"] = receiver_email
+
 subject = "subject of email"
 body = "body of email"
 sender_email = "sender account"
