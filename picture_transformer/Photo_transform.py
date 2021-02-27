@@ -6,15 +6,6 @@ import os
 from textwrap import TextWrapper
 import time
 
-def timer(func):
-	def wrapper(*args, **kwargs):
-		start = time.time()
-		rv = func(*args, **kwargs)
-		total = time.time() - start
-		print(f"Time: {total}")
-		return rv
-	return wrapper
-
 class PictureTransformer:
     def __init__(self, quotes_file, directory):
         self.quotes_file = quotes_file
@@ -25,13 +16,27 @@ class PictureTransformer:
         self.photo = None
         self.random_quote = ""
         self.number = len([f for f in os.listdir("created_images") if os.path.isfile(os.path.join("created_images", f))]) 
+        self.text_settings = {'position' : 0, 'font_scale' : 0, 'colour' : (0, 0, 0), 'thickness' : 0, 'font' : None ,
+                                'line_type' : None, 'text_size' : 0, 'line_height' : 0,
+                            }
+        self.total_time = 0
 
     def __str__(self):
         return f"Picture state {self.photo} \nQuote: {self.random_quote}"
 
+    def timer(func):
+        def wrapper(self, *args, **kwargs):
+            start = time.time()
+            rv = func(self, *args, **kwargs)
+            runtime = time.time() - start
+            self.total_time += runtime
+            return rv
+        return wrapper
+
     @timer
-    def random_photo(self):    
-        self.photo = cv.imread(f"{self.directory}/{os.listdir(self.directory)[self.rand_pos]}")
+    def random_photo(self):
+        try:
+            self.photo = cv.imread(f"{self.directory}/{os.listdir(self.directory)[self.rand_pos]}")
         return self.photo
 
     @timer
@@ -53,7 +58,6 @@ class PictureTransformer:
         for no, line in enumerate(quotes,1):
             tw = TextWrapper()
             tw.width = 50
-            # Random quote
             
             if self.rand_pos == no:            
                 if len(line) > 50:
@@ -62,83 +66,57 @@ class PictureTransformer:
                     self.random_quote = line
                 return self.random_quote
 
-class TextSettings(PictureTransformer):
-    def __init__(self, random_quote, photo):
-        super().__init__(random_quote, photo)
-        self.position = 0
-        self.font_scale = 0
-        self.colour = (None, None, None)
-        self.thickness = 0
-        self.font = None 
-        self.line_type = None
-        self.text_size, _ = 0, 0
-        self.line_height = None
-        self.x, self.y0 = (None, None)
-
-    def __str__(self):
-        return f"Photo {self.photo} \n{self.random_quote}"
-
     @timer
     def text_settings_default(self):
-        # Text on image variables
-        self.position = (self.photo.shape[1] // 20, self.photo.shape[0] // 2 + self.photo.shape[0] // 5)
-        self.font_scale = .6
-        self.colour = (255, 255, 255)
-        self.thickness = 1
-        self.font = cv.FONT_HERSHEY_DUPLEX  
-        self.line_type = cv.LINE_AA
-        self.text_size, _ = cv.getTextSize(self.random_quote, self.font, self.font_scale, self.thickness)
-        self.line_height = self.text_size[1] + 5
-        self.x, self.y0 = self.position
+        self.text_settings['position'] = (self.photo.shape[1] // 20, self.photo.shape[0] // 2 + self.photo.shape[0] // 5)
+        self.text_settings['font_scale'] = .6
+        self.text_settings['colour'] = (255, 255, 255)
+        self.text_settings['thickness'] = 1
+        self.text_settings['font'] = cv.FONT_HERSHEY_DUPLEX  
+        self.text_settings['line_type'] = cv.LINE_AA
+        self.text_settings['text_size'], _ = cv.getTextSize(self.random_quote, self.text_settings['font'], self.text_settings['font_scale'], self.text_settings['thickness'])
+        self.text_settings['line_height'] = self.text_settings['text_size'][1] + 5
+        self.x, self.y0 = self.text_settings['position']
+
     
+    def black_outline(self):
+        for i, line in enumerate(self.random_quote.split("\n")):
+            y = self.y0 + i * self.text_settings['line_height']
+            cv.putText(self.photo,
+                        line,
+                        (self.x, y),
+                         self.text_settings['font'],
+                        self.text_settings['font_scale'],
+                        (0, 0, 0),
+                        self.text_settings['thickness'] + 1,
+                        self.text_settings['line_type'])
+            
+    
+    def white_text(self):
+        for i, line in enumerate(self.random_quote.split("\n")):
+            y = self.y0 + i * self.text_settings['line_height']
+            cv.putText(self.photo,
+                        line,
+                        (self.x, y),
+                        self.text_settings['font'],
+                        self.text_settings['font_scale'],
+                        self.text_settings['colour'],
+                        self.text_settings['thickness'],
+                        self.text_settings['line_type'])
+
     @timer
     def place_text(self):
         if len(self.random_quote) > 50:
             #Black Outline
-            for i, line in enumerate(self.random_quote.split("\n")):
-                y = self.y0 + i * self.line_height
-                cv.putText(self.photo,
-                            line,
-                            (self.x, y),
-                            self.font,
-                            self.font_scale,
-                            (0, 0, 0),
-                            self.thickness + 1,
-                            self.line_type)
+            self.black_outline()
             # Normal white text
-            for i, line in enumerate(self.random_quote.split("\n")):
-                y = self.y0 + i * self.line_height
-                cv.putText(self.photo,
-                            line,
-                            (self.x, y),
-                            self.font,
-                            self.font_scale,
-                            self.colour,
-                            self.thickness,
-                            self.line_type)
+            self.white_text()
 
         else:
             #Black Outline
-            for i, line in enumerate(self.random_quote.split("\n")):
-                y = self.y0 + i * self.line_height
-                cv.putText(self.photo,
-                            self.line,
-                            (self.x, y),
-                            self.font,
-                            self.font_scale,
-                            (0, 0, 0),
-                            self.thickness + 1,
-                            self.line_type)
+            self.black_outline()
             # Normal white text
-            for i, line in enumerate(self.random_quote):
-                y = self.y0 + i * self.line_height
-                cv.putText(self.photo,
-                            self.line,
-                            (self.x, y),
-                            self.font,
-                            self.font_scale,
-                            self.colour,
-                            self.thickness,
-                            self.line_type)           
+            self.white_text()       
+
         cv.waitKey(0)
         cv.imwrite(f"created_images/image{self.number + 1}.jpg", self.photo)
