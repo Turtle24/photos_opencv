@@ -9,8 +9,8 @@ from email.mime.text import MIMEText
 class EmailSettings(MIMEMultipart):
     def __init__(self):
         super().__init__()
-        self.email_information = {'subject' : "Test123", 'body' : "Testing", 'sender_email' : 'picaccnt24@gmail.com',
-        'receiver_email' : 'picaccnt24@gmail.com', 'password' : 'MomChristmas#24'
+        self.email_information = {'subject' : "Test123", 'body' : "Testing", 'sender_email' : '#####',
+        'receiver_email' : '#####', 'password' : '######'
         }
         self.message = MIMEMultipart()
         self.message["From"] = self.email_information['sender_email']
