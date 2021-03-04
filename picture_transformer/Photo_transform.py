@@ -37,6 +37,8 @@ class PictureTransformer:
     def random_photo(self):
         try:
             self.photo = cv.imread(f"{self.directory}/{os.listdir(self.directory)[self.rand_pos]}")
+        except BaseException as e:
+            print(f"Couldn't select a picture, oops")
         return self.photo
 
     @timer

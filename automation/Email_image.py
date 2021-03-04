@@ -5,12 +5,20 @@ from email import encoders
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+import re
+from dotenv import load_dotenv
+
+load_dotenv() 
+
+def custom_sort(elem):
+    number = re.findall(r'[0-9]+', elem)
+    return int(number[0])
 
 class EmailSettings(MIMEMultipart):
     def __init__(self):
         super().__init__()
-        self.email_information = {'subject' : "Test123", 'body' : "Testing", 'sender_email' : 'picaccnt24@gmail.com',
-        'receiver_email' : 'picaccnt24@gmail.com', 'password' : 'MomChristmas#24'
+        self.email_information = {'subject' : "Picture Time", 'body' : "Here's another one because why not.", 'sender_email' : os.environ.get("sender_email"),
+        'receiver_email' : os.environ.get("reciever_email"), 'password' : os.environ.get("password")
         }
         self.message = MIMEMultipart()
         self.message["From"] = self.email_information['sender_email']
@@ -24,9 +32,10 @@ class EmailSettings(MIMEMultipart):
 
     def send_email(self):
         self.message.attach(MIMEText(self.email_information['body'], "plain"))
+        self.files.sort(key=custom_sort)
         filename = self.files[-1]
+        self.files.sort(key=custom_sort)
 
-        # Open PDF file in binary mode
         with open(f"created_images/{filename}", "rb") as attachment:
             # Add file as application/octet-stream
             # Email client can usually download this automatically as attachment
