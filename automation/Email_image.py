@@ -7,7 +7,6 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import re
 from dotenv import load_dotenv
-
 load_dotenv() 
 
 def custom_sort(elem):
