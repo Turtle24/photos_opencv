@@ -8,6 +8,12 @@ import time
 
 class PictureTransformer:
     def __init__(self, quotes_file, directory):
+        """PictureTransformer is a class 
+
+        Args:
+            quotes_file (string): The name of the quotes file being used in data
+            directory (string): The location of the photos to use for transformation
+        """
         self.quotes_file = quotes_file
         self.directory = directory
         self.num_files = len([f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))])
@@ -25,6 +31,11 @@ class PictureTransformer:
         return f"Picture state {self.photo} \nQuote: {self.random_quote}"
 
     def timer(func):
+        """A decorator that times each method
+
+        Args:
+            func (Method): Timer
+        """
         def wrapper(self, *args, **kwargs):
             start = time.time()
             rv = func(self, *args, **kwargs)
@@ -35,6 +46,11 @@ class PictureTransformer:
 
     @timer
     def random_photo(self):
+        """A function that returns a random photo
+
+        Returns:
+            Numpy Array: The photo read by opencv
+        """
         try:
             self.photo = cv.imread(f"{self.directory}/{os.listdir(self.directory)[self.rand_pos]}")
         except BaseException as e:
@@ -43,6 +59,11 @@ class PictureTransformer:
 
     @timer
     def effect_randomizer(self):
+        """A function that applies a random filter
+
+        Returns:
+            Numpy Array: A numpy array of the photo with an effect applied
+        """
         if self.rand_effect == 1:
             self.photo = cv.cvtColor(self.photo, cv.COLOR_BGR2GRAY)
             return self.photo
@@ -56,6 +77,11 @@ class PictureTransformer:
             return self.photo
     @timer
     def random_quote_selector(self):
+        """A function that selects a random quote from the quote file.
+
+        Returns:
+            string: A quote
+        """
         quotes = open(f"data/{self.quotes_file}.txt", "r").readlines()
         for no, line in enumerate(quotes,1):
             tw = TextWrapper()
@@ -70,6 +96,8 @@ class PictureTransformer:
 
     @timer
     def text_settings_default(self):
+        """A function that generates the default text settings
+        """
         self.text_settings['position'] = (self.photo.shape[1] // 20, self.photo.shape[0] // 2 + self.photo.shape[0] // 5)
         self.text_settings['font_scale'] = .6
         self.text_settings['colour'] = (255, 255, 255)
@@ -82,6 +110,8 @@ class PictureTransformer:
 
     
     def black_outline(self):
+        """A function that applies a black outline to the text for readability
+        """
         for i, line in enumerate(self.random_quote.split("\n")):
             y = self.y0 + i * self.text_settings['line_height']
             cv.putText(self.photo,
@@ -95,6 +125,8 @@ class PictureTransformer:
             
     
     def white_text(self):
+        """A function that creates the text seen on the images
+        """
         for i, line in enumerate(self.random_quote.split("\n")):
             y = self.y0 + i * self.text_settings['line_height']
             cv.putText(self.photo,
@@ -108,6 +140,8 @@ class PictureTransformer:
 
     @timer
     def place_text(self):
+        """ The text is applied to the photo and depending on the filter applied the text is altered.
+        """
         if len(self.random_quote) > 50:
             #Black Outline
             self.black_outline()
