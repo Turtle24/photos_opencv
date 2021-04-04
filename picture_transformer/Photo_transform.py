@@ -5,6 +5,21 @@ import random
 import os
 from textwrap import TextWrapper
 import time
+import logging
+
+def timer(func):
+    """A decorator that times each method
+
+    Args:
+        func (Method): Timer
+    """
+    def wrapper(self, *args, **kwargs):
+        start = time.time()
+        rv = func(self, *args, **kwargs)
+        runtime = time.time() - start
+        self.total_time += runtime
+        return rv
+    return wrapper
 
 class PictureTransformer:
     def __init__(self, quotes_file, directory):
@@ -30,20 +45,6 @@ class PictureTransformer:
     def __str__(self):
         return f"Picture state {self.photo} \nQuote: {self.random_quote}"
 
-    def timer(func):
-        """A decorator that times each method
-
-        Args:
-            func (Method): Timer
-        """
-        def wrapper(self, *args, **kwargs):
-            start = time.time()
-            rv = func(self, *args, **kwargs)
-            runtime = time.time() - start
-            self.total_time += runtime
-            return rv
-        return wrapper
-
     @timer
     def random_photo(self):
         """A function that returns a random photo
@@ -67,12 +68,14 @@ class PictureTransformer:
         if self.rand_effect == 1:
             self.photo = cv.cvtColor(self.photo, cv.COLOR_BGR2GRAY)
             return self.photo
+
         elif self.rand_effect == 2:
             gray = cv.cvtColor(self.photo, cv.COLOR_BGR2GRAY)
             gauss = cv.GaussianBlur(gray, (3,3), 0)
             lap = cv.Laplacian(gauss, cv.CV_16S,ksize=3)
             self.photo = np.uint8(np.absolute(lap))
             return self.photo
+            
         elif self.rand_effect == 3:
             return self.photo
     @timer
@@ -108,7 +111,7 @@ class PictureTransformer:
         self.text_settings['line_height'] = self.text_settings['text_size'][1] + 5
         self.x, self.y0 = self.text_settings['position']
 
-    
+    @timer
     def black_outline(self):
         """A function that applies a black outline to the text for readability
         """
@@ -123,7 +126,7 @@ class PictureTransformer:
                         self.text_settings['thickness'] + 1,
                         self.text_settings['line_type'])
             
-    
+    @timer
     def white_text(self):
         """A function that creates the text seen on the images
         """
