@@ -138,7 +138,12 @@ dmypy.json
 cython_debug/
 
 # created images
+photos
+/photos
+created_images
 /created_images
+/data
+data
 
 # vscode settings
 .vscode
